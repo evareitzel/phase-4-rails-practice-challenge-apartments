@@ -36,3 +36,38 @@ $ rails g controller Leases --no-test-framework
 $ rails db:migrate db:seed
 
 # add CRUD actions to controllers
+
+
+####
+
+# POST /apartments
+
+# 1 - not wkg
+def create
+  apartment = Apartment.create(apartment_params)
+  if apartment.valid?
+    render json: apartment, status: :created
+  else
+    render json: { errors: apartment.errors }, status: :unprocessable_entity
+  end
+end
+
+# 2 - not wkg
+def create
+  apartment = Apartment.create!(apartment_params)
+  render json: apartment, status: :created
+rescue ActiveRecord::RecordInvalid => invalid
+  render json: { errors: invalid.record.errors }, status: :unprocessable_entity
+end
+
+  # not wkg - error msg not correct
+  # PATCH /apartments/:id
+  def update
+    apartment = find_apartment
+    apartment.update(apartment_params)
+    if apartment.valid?
+      render json: apartment, status: :accepted
+    else
+      render json: { error: apartment.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
