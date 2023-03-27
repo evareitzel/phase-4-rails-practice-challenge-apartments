@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_19_104550) do
+ActiveRecord::Schema.define(version: 2023_03_27_144119) do
 
   create_table "apartments", force: :cascade do |t|
     t.integer "number"
@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(version: 2023_03_19_104550) do
     t.integer "rent"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "apartment_id"
+    t.integer "tenant_id"
   end
 
   create_table "tenants", force: :cascade do |t|
