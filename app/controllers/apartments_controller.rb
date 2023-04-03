@@ -1,6 +1,7 @@
 class ApartmentsController < ApplicationController
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
   # GET /apartments
   def index
@@ -11,41 +12,38 @@ class ApartmentsController < ApplicationController
   # GET /apartments/:id
   def show
     apartment = find_apartment
-      render json: apartment, status: :ok
-  rescue ActiveRecord::RecordNotFound => e
-    render json: { error: e.to_s }, status: :not_found
+    render json: apartment
   end
 
   # POST /apartments
   def create
-    apartment = Apartment.create(apartment_params)
-    if apartment.valid?
-      render json: apartment, status: :created
-    else
-      render json: { errors: apartment.errors.full_messages }, status: :unprocessable_entity
-    end
+    apartment = Apartment.create!(apartment_params)
+    render json: apartment, status: :created    
   end
-  
+
   # PATCH /apartments/:id
   def update
     apartment = find_apartment
-    apartment.update(apartment_params)
-    if apartment.valid?
-      render json: apartment, status: :accepted
-    else
-      render json: { error: apartment.errors.full_messages }, status: :unprocessable_entity
-    end
+    apartment.update!(apartment_params)
+    render json: apartment, status: :accepted
   end
 
   # DELETE /apartments/:id
   def destroy
     apartment = find_apartment
-    apartment.destroy!
+    apartment.destroy
     head :no_content
   end
 
-
   private
+
+  def render_not_found_response
+    render json: { errors: ["Apartment not found"] }, status: :not_found
+  end
+
+  def render_unprocessable_entity_response(invalid)
+    render json:{ errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
+  end
 
   def apartment_params
     params.permit(:number)
@@ -53,10 +51,6 @@ class ApartmentsController < ApplicationController
 
   def find_apartment
     Apartment.find(params[:id])
-  end
-
-  def record_not_found(exception)
-    render json: { error: exception.message }, status: :not_found
   end
 
 end

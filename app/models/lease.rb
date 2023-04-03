@@ -3,5 +3,4 @@ class Lease < ApplicationRecord
   belongs_to :tenant
 
   validates :rent, presence: true
-  # validates :rent, numericality: { only_integer: true }
 end
